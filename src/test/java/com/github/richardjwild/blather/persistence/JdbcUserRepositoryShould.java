@@ -1,12 +1,12 @@
 package com.github.richardjwild.blather.persistence;
 
+import com.github.richardjwild.blather.helper.DBHelper;
 import com.github.richardjwild.blather.persistence.dao.UserDAO;
 import com.github.richardjwild.blather.user.User;
 import com.github.richardjwild.blather.user.UserRepository;
+import org.junit.After;
 import org.junit.Test;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Optional;
 
@@ -47,10 +47,10 @@ public class JdbcUserRepositoryShould {
 
     @Test(expected = DuplicateUserNameNotAllowed.class)
     public void not_store_duplicate_users_when_the_same_user_saved_twice() {
-        String userName = "user_name";
+        String userName = "Dinah";
         User user = new User(userName);
 
-        userRepository = new JdbcUserRepository(new UserDAO(getConnection()));
+        userRepository = new JdbcUserRepository(new UserDAO(DBHelper.getConnection()));
 
         userRepository.save(user);
         User userWithSameName = new User(userName);
@@ -58,16 +58,8 @@ public class JdbcUserRepositoryShould {
         userRepository.save(userWithSameName);
     }
 
-    private Connection getConnection() {
-        try {
-            return DriverManager.getConnection(
-                    "jdbc:postgresql://localhost:5432/test_blather",
-                    "postgres",
-                    "postgres"
-            );
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
+    @After
+    public void tearDown() {
+        DBHelper.clearConnection();
     }
 }

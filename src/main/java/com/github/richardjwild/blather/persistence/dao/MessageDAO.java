@@ -15,14 +15,15 @@ public class MessageDAO {
     }
 
     public List<Message> findBy(String userName) throws SQLException {
-        String sql = "SELECT m.user_id, m.message_text, m.message_date, u.user_id, u.name" +
-                    " FROM messages m LEFT OUTER JOIN users u " +
-                    " ON m.user_id = u.user_id " +
-                    " WHERE u.name = ?";
+        String sql = "SELECT mess.user_id, mess.message_text, mess.message_date, " +
+                    "        us.user_id, us.name " +
+                    " FROM messages mess " +
+                    " LEFT OUTER JOIN users us ON mess.user_id = us.user_id " +
+                    " WHERE us.name = ?";
 
-        PreparedStatement statement = connection.prepareStatement(sql);
-        statement.setString(1, userName);
-        ResultSet resultSet = statement.executeQuery();
+        PreparedStatement selectStatement = connection.prepareStatement(sql);
+        selectStatement.setString(1, userName);
+        ResultSet resultSet = selectStatement.executeQuery();
 
         List<Message> messages = new ArrayList<>();
 
@@ -32,6 +33,7 @@ public class MessageDAO {
             messages.add(message);
         }
 
+        resultSet.close();
         return messages;
     }
 
@@ -53,13 +55,14 @@ public class MessageDAO {
         }
 
         String sql = "INSERT INTO messages(user_id, message_text, message_date)" +
-                " VALUES(?, ?, ?)";
-        PreparedStatement statement = connection.prepareStatement(sql);
-        statement.setInt(1, userId);
-        statement.setString(2, message.text());
-        statement.setObject(3, Timestamp.from(message.timestamp()));
+                    " VALUES(?, ?, ?)";
+        PreparedStatement insertStatement = connection.prepareStatement(sql);
+        insertStatement.setInt(1, userId);
+        insertStatement.setString(2, message.text());
+        insertStatement.setObject(3, Timestamp.from(message.timestamp()));
 
-        statement.execute();
-        statement.close();
+        insertStatement.executeUpdate();
+        insertStatement.close();
+        resultSet.close();
     }
 }

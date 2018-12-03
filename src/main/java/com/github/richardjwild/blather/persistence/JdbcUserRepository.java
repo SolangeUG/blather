@@ -5,14 +5,13 @@ import com.github.richardjwild.blather.user.User;
 import com.github.richardjwild.blather.user.UserRepository;
 
 import java.sql.SQLException;
-import java.util.DuplicateFormatFlagsException;
 import java.util.Optional;
 
 public class JdbcUserRepository implements UserRepository {
 
     private UserDAO userDAO;
 
-    public JdbcUserRepository(UserDAO userDAO) {
+    JdbcUserRepository(UserDAO userDAO) {
         this.userDAO = userDAO;
     }
 
@@ -32,6 +31,7 @@ public class JdbcUserRepository implements UserRepository {
         try {
             userDAO.save(user);
         } catch (SQLException e) {
+            e.printStackTrace();
             throw new DuplicateUserNameNotAllowed(e.getMessage());
         }
     }

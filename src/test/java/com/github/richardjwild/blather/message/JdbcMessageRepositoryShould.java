@@ -1,8 +1,10 @@
 package com.github.richardjwild.blather.message;
 
+import com.github.richardjwild.blather.helper.DBHelper;
 import com.github.richardjwild.blather.persistence.JdbcMessageRepository;
 import com.github.richardjwild.blather.persistence.dao.MessageDAO;
 import com.github.richardjwild.blather.user.User;
+import org.junit.After;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -72,7 +74,7 @@ public class JdbcMessageRepositoryShould {
 
     @Test
     public void return_empty_collection_when_no_messages_posted_to_recipient() {
-        messageDAO = new MessageDAO(getConnection());
+        messageDAO = new MessageDAO(DBHelper.getConnection());
         messageRepository = new JdbcMessageRepository(messageDAO);
 
         Stream<Message> actualMessages = messageRepository.allMessagesPostedTo(RECIPIENT_1);
@@ -82,7 +84,7 @@ public class JdbcMessageRepositoryShould {
 
     @Test
     public void retrieve_message_posted_to_recipient() {
-        messageDAO = new MessageDAO(getConnection());
+        messageDAO = new MessageDAO(DBHelper.getConnection());
         messageRepository = new JdbcMessageRepository(messageDAO);
         messageRepository.postMessage(RECIPIENT_1, MESSAGE_1_FOR_RECIPIENT_1);
         
@@ -91,17 +93,9 @@ public class JdbcMessageRepositoryShould {
         assertThat(list(actualMesasges)).contains(MESSAGE_1_FOR_RECIPIENT_1);
     }
 
-    private Connection getConnection() {
-        try {
-            return DriverManager.getConnection(
-                    "jdbc:postgresql://localhost:5432/test_blather",
-                    "postgres",
-                    "postgres"
-            );
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
+    @After
+    public void tearDown() {
+        DBHelper.clearConnection();
     }
 
     private List<Message> list(Stream<Message> messageStream) {

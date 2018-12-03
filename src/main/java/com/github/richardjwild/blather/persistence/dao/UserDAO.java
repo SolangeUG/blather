@@ -17,10 +17,10 @@ public class UserDAO {
 
     public User findBy(String name) throws SQLException {
         String sql = "SELECT * FROM users WHERE name = ?";
-        PreparedStatement statement = connection.prepareStatement(sql);
-        statement.setString(1, name);
+        PreparedStatement selectStatement = connection.prepareStatement(sql);
+        selectStatement.setString(1, name);
 
-        ResultSet results = statement.executeQuery();
+        ResultSet results = selectStatement.executeQuery();
 
         User user = null;
         while(results.next()) {
@@ -32,8 +32,9 @@ public class UserDAO {
 
     public void save(User user) throws SQLException {
         String sql = "INSERT INTO users(name) VALUES(?)";
-        PreparedStatement statement = connection.prepareStatement(sql);
-        statement.setString(1, user.name());
-        statement.execute();
+        PreparedStatement insertStatement = connection.prepareStatement(sql);
+        insertStatement.setString(1, user.name());
+
+        insertStatement.executeUpdate();
     }
 }
