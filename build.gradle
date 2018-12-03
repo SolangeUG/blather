@@ -4,9 +4,6 @@ repositories {
     mavenCentral()
 }
 
-plugins {
-    id "org.flywaydb.flyway" version "5.2.3"
-}
 
 dependencies {
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
@@ -30,10 +27,4 @@ task fatJar(type: Jar) {
     baseName = project.name + '-all'
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     with jar
-}
-
-flyway {
-    url = 'jdbc:postgresql://localhost:5432/blather'
-    user = 'postgres'
-    password = 'postgres'
 }
