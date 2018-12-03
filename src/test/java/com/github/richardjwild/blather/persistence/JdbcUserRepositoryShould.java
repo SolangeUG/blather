@@ -15,7 +15,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-public class UserRepositoryShould {
+public class JdbcUserRepositoryShould {
 
     private UserDAO userDAO = mock(UserDAO.class);
     private UserRepository userRepository = new JdbcUserRepository(userDAO);
