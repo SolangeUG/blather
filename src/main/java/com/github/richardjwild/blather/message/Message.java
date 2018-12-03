@@ -1,7 +1,7 @@
 package com.github.richardjwild.blather.message;
 
-import com.github.richardjwild.blather.user.User;
 import com.github.richardjwild.blather.time.TimestampFormatter;
+import com.github.richardjwild.blather.user.User;
 
 import java.time.Instant;
 import java.util.StringJoiner;
@@ -48,5 +48,17 @@ public class Message implements Comparable<Message> {
     @Override
     public int hashCode() {
         return reflectionHashCode(this);
+    }
+
+    public User recipient() {
+        return recipient;
+    }
+
+    public String text() {
+        return text;
+    }
+
+    public Instant timestamp() {
+        return timestamp;
     }
 }
