@@ -18,7 +18,7 @@ public class DatabaseConnection {
 
     private static void setUpConnection() {
         if (connection == null) {
-            String databaseUrl = "jdbc:postgresql://localhost:5432/test_blather";
+            String databaseUrl = "jdbc:postgresql://localhost:5432/blather";
             Properties properties = new Properties();
             properties.setProperty("user", "postgres");
             properties.setProperty("password", "postgres");
