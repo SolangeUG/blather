@@ -1,3 +1,7 @@
+DELETE FROM messages;
+
+DELETE FROM users;
+
 INSERT INTO
     USERS(user_name)
 VALUES('Isimbi');
