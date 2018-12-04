@@ -4,16 +4,17 @@ import com.github.richardjwild.blather.helper.DBHelper;
 import com.github.richardjwild.blather.persistence.dao.UserDAO;
 import com.github.richardjwild.blather.user.User;
 import com.github.richardjwild.blather.user.UserRepository;
-import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Test;
 
 import java.sql.SQLException;
 import java.util.Optional;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 public class JdbcUserRepositoryShould {
 
@@ -34,32 +35,39 @@ public class JdbcUserRepositoryShould {
     public void return_stored_user_when_user_is_found() throws SQLException {
         String userName = "will_be_found";
         User expectedUser = new User(userName);
-        given(userDAO.findBy(userName)).willReturn(expectedUser);
+
+        userDAO = new UserDAO(DBHelper.getConnection());
+        userRepository = new JdbcUserRepository(userDAO);
 
         userRepository.save(expectedUser);
 
         Optional<User> actualUser = userRepository.find(userName);
+        User retrievedUser = userDAO.findBy(userName);
 
-        verify(userDAO).save(expectedUser);
         assertThat(actualUser.isPresent()).isTrue();
-        assertThat(actualUser.get()).isSameAs(expectedUser);
+        assertEquals(actualUser.get(), retrievedUser);
     }
 
-    @Test(expected = DuplicateUserNameNotAllowed.class)
+    @Test
     public void not_store_duplicate_users_when_the_same_user_saved_twice() {
         String userName = "Dinah";
         User user = new User(userName);
 
         userRepository = new JdbcUserRepository(new UserDAO(DBHelper.getConnection()));
-
         userRepository.save(user);
-        User userWithSameName = new User(userName);
 
+        User userWithSameName = new User(userName);
         userRepository.save(userWithSameName);
+
+        Optional<User> retrievedUser = userRepository.find(userName);
+
+        assertEquals(retrievedUser.get(), user);
+        assertEquals(retrievedUser.get(), userWithSameName);
     }
 
-    @After
-    public void tearDown() {
+    @AfterClass
+    public static void tearDown() {
+        DBHelper.clearTestData();
         DBHelper.clearConnection();
     }
 }

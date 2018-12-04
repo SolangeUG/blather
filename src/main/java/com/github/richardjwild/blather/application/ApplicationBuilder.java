@@ -1,23 +1,35 @@
 package com.github.richardjwild.blather.application;
 
 import com.github.richardjwild.blather.command.factory.*;
+import com.github.richardjwild.blather.helper.DatabaseConnection;
 import com.github.richardjwild.blather.io.Input;
 import com.github.richardjwild.blather.io.Output;
+import com.github.richardjwild.blather.message.Message;
 import com.github.richardjwild.blather.message.MessageRepository;
 import com.github.richardjwild.blather.parsing.CommandReader;
 import com.github.richardjwild.blather.parsing.InputParser;
 import com.github.richardjwild.blather.persistence.InMemoryMessageRepository;
 import com.github.richardjwild.blather.persistence.InMemoryUserRepository;
+import com.github.richardjwild.blather.persistence.JdbcMessageRepository;
+import com.github.richardjwild.blather.persistence.JdbcUserRepository;
+import com.github.richardjwild.blather.persistence.dao.MessageDAO;
+import com.github.richardjwild.blather.persistence.dao.UserDAO;
 import com.github.richardjwild.blather.time.Clock;
 import com.github.richardjwild.blather.time.TimestampFormatter;
 import com.github.richardjwild.blather.user.UserRepository;
+
+import java.sql.Connection;
 
 public class ApplicationBuilder {
 
     public static Application build(Input input, Output output, Clock clock) {
 
-        UserRepository userRepository = new InMemoryUserRepository();
-        MessageRepository messageRepository = new InMemoryMessageRepository();
+
+        UserDAO userDAO = new UserDAO(DatabaseConnection.getConnection());
+        MessageDAO messageDAO = new MessageDAO(DatabaseConnection.getConnection());
+
+        UserRepository userRepository = new JdbcUserRepository(userDAO); //new InMemoryUserRepository();
+        MessageRepository messageRepository = new JdbcMessageRepository(messageDAO); //new InMemoryMessageRepository();
 
         InputParser inputParser = new InputParser();
         Controller controller = new Controller();

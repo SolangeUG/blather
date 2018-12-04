@@ -1,5 +1,6 @@
 package com.github.richardjwild.blather.application;
 
+import com.github.richardjwild.blather.helper.DatabaseConnection;
 import com.github.richardjwild.blather.io.Output;
 
 public class Application {
@@ -19,5 +20,6 @@ public class Application {
         output.writeLine(WELCOME_MESSAGE);
         eventLoop.start();
         output.writeLine(GOODBYE_MESSAGE);
+        DatabaseConnection.closeConnection();
     }
 }

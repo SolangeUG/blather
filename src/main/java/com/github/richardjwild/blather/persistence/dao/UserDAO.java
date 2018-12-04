@@ -25,8 +25,9 @@ public class UserDAO {
         User user = null;
         while(results.next()) {
             user = new User(results.getString("user_name"));
-            results.close();
         }
+
+        results.close();
         return user;
     }
 

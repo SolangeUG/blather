@@ -11,7 +11,7 @@ public class JdbcUserRepository implements UserRepository {
 
     private UserDAO userDAO;
 
-    JdbcUserRepository(UserDAO userDAO) {
+    public JdbcUserRepository(UserDAO userDAO) {
         this.userDAO = userDAO;
     }
 
@@ -28,11 +28,14 @@ public class JdbcUserRepository implements UserRepository {
 
     @Override
     public void save(User user) {
-        try {
-            userDAO.save(user);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new DuplicateUserNameNotAllowed(e.getMessage());
+        Optional<User> retrievedUser = this.find(user.name());
+        if (! retrievedUser.isPresent()) {
+            try {
+                userDAO.save(user);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
+
     }
 }
