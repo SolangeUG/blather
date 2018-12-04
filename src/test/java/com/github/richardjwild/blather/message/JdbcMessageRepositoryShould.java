@@ -4,7 +4,9 @@ import com.github.richardjwild.blather.helper.DBHelper;
 import com.github.richardjwild.blather.persistence.JdbcMessageRepository;
 import com.github.richardjwild.blather.persistence.dao.MessageDAO;
 import com.github.richardjwild.blather.user.User;
-import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -36,6 +38,12 @@ public class JdbcMessageRepositoryShould {
 
     private MessageDAO messageDAO = mock(MessageDAO.class);
     private MessageRepository messageRepository = new JdbcMessageRepository(messageDAO);
+
+    @BeforeClass
+    public static void setUp() {
+        DBHelper.getConnection();
+        DBHelper.insertTestData();
+    }
 
     @Test
     public void store_all_messages_posted_to_a_recipient() throws SQLException {
@@ -91,8 +99,9 @@ public class JdbcMessageRepositoryShould {
         assertThat(list(actualMesasges)).contains(MESSAGE_1_FOR_RECIPIENT_1);
     }
 
-    @After
-    public void tearDown() {
+    @AfterClass
+    public static void tearDown() {
+        DBHelper.clearTestData();
         DBHelper.clearConnection();
     }
 
