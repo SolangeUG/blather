@@ -65,6 +65,19 @@ public class JdbcUserRepositoryShould {
         assertEquals(retrievedUser.get(), userWithSameName);
     }
 
+//    @Test
+//    public void store_users_following() {
+//        User user = new User("Jolene");
+//        user.follow(new User("rich"));
+//        user.follow(new User("sarah"));
+//
+//        userRepository = new JdbcUserRepository(new UserDAO(DBHelper.getConnection()));
+//        userRepository.save(user);
+//
+//        Optional<User> retrievedUser = userRepository.find("Jolene");
+//
+//    }
+
     @AfterClass
     public static void tearDown() {
         DBHelper.clearTestData();

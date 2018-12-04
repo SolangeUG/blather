@@ -35,6 +35,8 @@ public class JdbcUserRepository implements UserRepository {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
+        } else {
+
         }
 
     }

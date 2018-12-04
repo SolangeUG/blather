@@ -27,6 +27,7 @@ public class UserDAO {
             user = new User(results.getString("user_name"));
         }
 
+
         results.close();
         return user;
     }

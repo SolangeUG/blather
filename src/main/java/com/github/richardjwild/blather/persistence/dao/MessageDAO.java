@@ -15,10 +15,10 @@ public class MessageDAO {
     }
 
     public List<Message> findBy(String userName) throws SQLException {
-        String sql = "SELECT mess.user_id, mess.message_text, mess.message_date, " +
-                    "        us.user_id, us.user_name " +
+        String sql = "SELECT mess.user_name, mess.message_text, mess.message_date, " +
+                    "        us.user_name " +
                     " FROM messages mess " +
-                    " LEFT OUTER JOIN users us ON mess.user_id = us.user_id " +
+                    " LEFT OUTER JOIN users us ON mess.user_name = us.user_name " +
                     " WHERE us.user_name = ?";
 
         PreparedStatement selectStatement = connection.prepareStatement(sql);
@@ -44,25 +44,14 @@ public class MessageDAO {
     }
 
     public void save(Message message) throws SQLException {
-        PreparedStatement userStatement = connection.prepareStatement(
-                "SELECT user_id FROM users WHERE user_name = ?"
-        );
-        userStatement.setString(1, message.recipient().name());
-        ResultSet resultSet = userStatement.executeQuery();
-        int userId = 0;
-        while(resultSet.next()) {
-            userId = resultSet.getInt("user_id");
-        }
-
-        String sql = "INSERT INTO messages(user_id, message_text, message_date)" +
+        String sql = "INSERT INTO messages(user_name, message_text, message_date)" +
                     " VALUES(?, ?, ?)";
         PreparedStatement insertStatement = connection.prepareStatement(sql);
-        insertStatement.setInt(1, userId);
+        insertStatement.setString(1, message.recipient().name());
         insertStatement.setString(2, message.text());
         insertStatement.setObject(3, Timestamp.from(message.timestamp()));
 
         insertStatement.executeUpdate();
         insertStatement.close();
-        resultSet.close();
     }
 }
