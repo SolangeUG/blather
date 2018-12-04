@@ -16,10 +16,10 @@ public class MessageDAO {
 
     public List<Message> findBy(String userName) throws SQLException {
         String sql = "SELECT mess.user_id, mess.message_text, mess.message_date, " +
-                    "        us.user_id, us.name " +
+                    "        us.user_id, us.user_name " +
                     " FROM messages mess " +
                     " LEFT OUTER JOIN users us ON mess.user_id = us.user_id " +
-                    " WHERE us.name = ?";
+                    " WHERE us.user_name = ?";
 
         PreparedStatement selectStatement = connection.prepareStatement(sql);
         selectStatement.setString(1, userName);
@@ -45,7 +45,7 @@ public class MessageDAO {
 
     public void save(Message message) throws SQLException {
         PreparedStatement userStatement = connection.prepareStatement(
-                "SELECT user_id FROM users WHERE name = ?"
+                "SELECT user_id FROM users WHERE user_name = ?"
         );
         userStatement.setString(1, message.recipient().name());
         ResultSet resultSet = userStatement.executeQuery();

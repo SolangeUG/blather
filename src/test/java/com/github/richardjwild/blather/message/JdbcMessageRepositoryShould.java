@@ -7,8 +7,6 @@ import com.github.richardjwild.blather.user.User;
 import org.junit.After;
 import org.junit.Test;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.util.Arrays;
@@ -24,8 +22,8 @@ import static org.mockito.Mockito.verify;
 
 public class JdbcMessageRepositoryShould {
 
-    private static final User RECIPIENT_1 = new User("recipient1");
-    private static final User RECIPIENT_2 = new User("recipient2");
+    private static final User RECIPIENT_1 = new User("Isimbi");
+    private static final User RECIPIENT_2 = new User("Benjamin");
     private static final String TEXT_1 = "message text 1";
     private static final String TEXT_2 = "message text 2";
     private static final String TEXT_3 = "message text 3";
@@ -77,7 +75,7 @@ public class JdbcMessageRepositoryShould {
         messageDAO = new MessageDAO(DBHelper.getConnection());
         messageRepository = new JdbcMessageRepository(messageDAO);
 
-        Stream<Message> actualMessages = messageRepository.allMessagesPostedTo(RECIPIENT_1);
+        Stream<Message> actualMessages = messageRepository.allMessagesPostedTo(RECIPIENT_2);
 
         assertThat(list(actualMessages)).isEmpty();
     }
