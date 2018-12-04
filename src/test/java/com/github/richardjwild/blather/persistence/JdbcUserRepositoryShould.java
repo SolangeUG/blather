@@ -8,6 +8,7 @@ import org.junit.AfterClass;
 import org.junit.Test;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -90,6 +91,20 @@ public class JdbcUserRepositoryShould {
 
         assertTrue(usersFollowing.contains(rich));
         assertTrue(usersFollowing.contains(sarah));
+    }
+
+    @Test
+    public void a_user_should_not_follow_themselves() {
+        User rich = new User("Rich");
+        userRepository = new JdbcUserRepository(new UserDAO(DBHelper.getConnection()));
+        userRepository.save(rich);
+
+        Optional<User> retrievedUser = userRepository.find("Rich");
+
+        List<User> usersFollowing = new ArrayList<>(retrievedUser.get().getUsersFollowing());
+
+        assertTrue(usersFollowing.isEmpty());
+
     }
 
     @AfterClass

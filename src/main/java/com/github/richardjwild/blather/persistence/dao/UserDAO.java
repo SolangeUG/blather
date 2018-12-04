@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -54,7 +55,7 @@ public class UserDAO {
         insertStatement.setString(1, user.name());
 
         insertStatement.executeUpdate();
-        List<User> usersFollowing = user.wallUsers().collect(Collectors.toList());
+        List<User> usersFollowing = new ArrayList<>(user.getUsersFollowing());
 
         for (User following : usersFollowing) {
             sql = "INSERT INTO userFollowing(user_name, follows_name) VALUES(?, ?)";

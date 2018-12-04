@@ -36,4 +36,8 @@ public class User {
     public int hashCode() {
         return name.hashCode();
     }
+
+    public Set<User> getUsersFollowing() {
+        return usersFollowing;
+    }
 }
