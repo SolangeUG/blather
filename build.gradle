@@ -1,4 +1,11 @@
+import org.flywaydb.gradle.task.FlywayMigrateTask
+
+plugins {
+    id "org.flywaydb.flyway" version "5.2.3"
+}
+
 apply plugin: 'java'
+
 
 repositories {
     mavenCentral()
@@ -27,4 +34,18 @@ task fatJar(type: Jar) {
     baseName = project.name + '-all'
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     with jar
+}
+
+task migrateProductionDatabase(type: FlywayMigrateTask) {
+    url = 'jdbc:postgresql://localhost:5432/blather'
+    user = 'postgres'
+    password = 'postgres'
+    schemas = ['public']
+}
+
+task migrateTestDatabase(type: FlywayMigrateTask) {
+    url = 'jdbc:postgresql://localhost:5432/test_blather'
+    user = 'postgres'
+    password = 'postgres'
+    schemas = ['public']
 }
