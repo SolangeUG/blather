@@ -36,7 +36,11 @@ public class JdbcUserRepository implements UserRepository {
                 e.printStackTrace();
             }
         } else {
-
+            try {
+                userDAO.update(user);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
 
     }

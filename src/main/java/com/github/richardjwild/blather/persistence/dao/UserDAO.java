@@ -8,7 +8,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class UserDAO {
 
@@ -66,5 +65,24 @@ public class UserDAO {
         }
 
         insertStatement.close();
+    }
+
+    public void update(User user) throws SQLException {
+        List<User> newUsersFollowing = new ArrayList<>(user.getUsersFollowing());
+
+        User retrievedUser = this.findBy(user.name());
+        List<User> usersFollowing = new ArrayList<>(retrievedUser.getUsersFollowing());
+
+        for (User following : newUsersFollowing) {
+
+            if (! usersFollowing.contains(following)) {
+                String sql = "INSERT INTO userFollowing(user_name, follows_name) VALUES(?, ?)";
+
+                PreparedStatement insertStatement = connection.prepareStatement(sql);
+                insertStatement.setString(1, user.name());
+                insertStatement.setString(2, following.name());
+                insertStatement.executeUpdate();
+            }
+        }
     }
 }

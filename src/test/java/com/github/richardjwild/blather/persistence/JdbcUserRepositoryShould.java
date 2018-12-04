@@ -73,24 +73,32 @@ public class JdbcUserRepositoryShould {
         User jolene = new User("Jolene");
         User rich = new User("Rich");
         User sarah = new User("Sarah");
+        User teddy = new User("Teddy");
+        User bear = new User("Bear");
 
         jolene.follow(rich);
         jolene.follow(sarah);
+        jolene.follow(teddy);
 
         userRepository = new JdbcUserRepository(new UserDAO(DBHelper.getConnection()));
         userRepository.save(rich);
         userRepository.save(sarah);
+        userRepository.save(teddy);
+        userRepository.save(bear);
 
+        userRepository.save(jolene);
+
+        jolene.follow(bear);
         userRepository.save(jolene);
 
         Optional<User> retrievedUser = userRepository.find("Jolene");
 
-        List<User> usersFollowing = retrievedUser.get()
-                                        .wallUsers()
-                                        .collect(Collectors.toList());
+        List<User> usersFollowing = new ArrayList<>(retrievedUser.get().getUsersFollowing());
 
         assertTrue(usersFollowing.contains(rich));
         assertTrue(usersFollowing.contains(sarah));
+        assertTrue(usersFollowing.contains(teddy));
+        assertTrue(usersFollowing.contains(bear));
     }
 
     @Test
