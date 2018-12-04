@@ -8,7 +8,9 @@ import org.junit.AfterClass;
 import org.junit.Test;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -65,18 +67,30 @@ public class JdbcUserRepositoryShould {
         assertEquals(retrievedUser.get(), userWithSameName);
     }
 
-//    @Test
-//    public void store_users_following() {
-//        User user = new User("Jolene");
-//        user.follow(new User("rich"));
-//        user.follow(new User("sarah"));
-//
-//        userRepository = new JdbcUserRepository(new UserDAO(DBHelper.getConnection()));
-//        userRepository.save(user);
-//
-//        Optional<User> retrievedUser = userRepository.find("Jolene");
-//
-//    }
+    @Test
+    public void store_users_following() {
+        User jolene = new User("Jolene");
+        User rich = new User("Rich");
+        User sarah = new User("Sarah");
+
+        jolene.follow(rich);
+        jolene.follow(sarah);
+
+        userRepository = new JdbcUserRepository(new UserDAO(DBHelper.getConnection()));
+        userRepository.save(rich);
+        userRepository.save(sarah);
+
+        userRepository.save(jolene);
+
+        Optional<User> retrievedUser = userRepository.find("Jolene");
+
+        List<User> usersFollowing = retrievedUser.get()
+                                        .wallUsers()
+                                        .collect(Collectors.toList());
+
+        assertTrue(usersFollowing.contains(rich));
+        assertTrue(usersFollowing.contains(sarah));
+    }
 
     @AfterClass
     public static void tearDown() {

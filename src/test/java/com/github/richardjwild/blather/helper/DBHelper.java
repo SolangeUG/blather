@@ -37,6 +37,10 @@ public class DBHelper {
                 PreparedStatement statement = connection.prepareStatement(sql);
                 statement.executeUpdate();
 
+                sql = "DELETE FROM userFollowing";
+                statement = connection.prepareStatement(sql);
+                statement.executeUpdate();
+
                 sql = "DELETE FROM users";
                 statement = connection.prepareStatement(sql);
                 statement.executeUpdate();
