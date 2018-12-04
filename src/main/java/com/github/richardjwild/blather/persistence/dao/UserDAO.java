@@ -54,15 +54,7 @@ public class UserDAO {
         insertStatement.setString(1, user.name());
 
         insertStatement.executeUpdate();
-        List<User> usersFollowing = new ArrayList<>(user.getUsersFollowing());
-
-        for (User following : usersFollowing) {
-            sql = "INSERT INTO userFollowing(user_name, follows_name) VALUES(?, ?)";
-            insertStatement = connection.prepareStatement(sql);
-            insertStatement.setString(1, user.name());
-            insertStatement.setString(2, following.name());
-            insertStatement.executeUpdate();
-        }
+        update(user);
 
         insertStatement.close();
     }
