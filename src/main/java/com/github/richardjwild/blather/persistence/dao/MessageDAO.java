@@ -1,13 +1,13 @@
 package com.github.richardjwild.blather.persistence.dao;
 
-import com.github.richardjwild.blather.helper.DatabaseConnection;
 import com.github.richardjwild.blather.message.Message;
 import com.github.richardjwild.blather.user.User;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import java.sql.*;
-import java.time.LocalDate;
-import java.util.ArrayList;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.List;
 
 public class MessageDAO {
@@ -19,7 +19,7 @@ public class MessageDAO {
         this.jdbcTemplate = new JdbcTemplate(DataSourceHelper.getDataSource());
     }
 
-    public List<Message> findBy(String userName) throws SQLException {
+    public List<Message> findBy(String userName) {
         String sql = "SELECT mess.user_name, mess.message_text, mess.message_date, " +
                     "        us.user_name " +
                     " FROM messages mess " +
@@ -33,12 +33,6 @@ public class MessageDAO {
                                     (rs, rowNum) -> new Message(user,
                                                     rs.getString("message_text"),
                                                     rs.getTimestamp("message_date").toInstant()));
-    }
-
-    private Message getMessage(ResultSet resultSet, User user) throws SQLException {
-        return new Message(user,
-                        resultSet.getString("message_text"),
-                        resultSet.getTimestamp("message_date").toInstant());
     }
 
     public void save(Message message) throws SQLException {

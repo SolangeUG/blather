@@ -26,11 +26,6 @@ public class JdbcMessageRepository implements MessageRepository {
 
     @Override
     public Stream<Message> allMessagesPostedTo(User recipient) {
-        try {
-            return messageDAO.findBy(recipient.name()).stream();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return Stream.empty();
-        }
+        return messageDAO.findBy(recipient.name()).stream();
     }
 }
