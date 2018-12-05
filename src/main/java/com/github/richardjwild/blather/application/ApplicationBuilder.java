@@ -24,12 +24,13 @@ public class ApplicationBuilder {
 
     public static Application build(Input input, Output output, Clock clock) {
 
+        //UserDAO userDAO = new UserDAO(DatabaseConnection.getConnection());
+        //MessageDAO messageDAO = new MessageDAO(DatabaseConnection.getConnection());
 
-        UserDAO userDAO = new UserDAO(DatabaseConnection.getConnection());
-        MessageDAO messageDAO = new MessageDAO(DatabaseConnection.getConnection());
-
-        UserRepository userRepository = new JdbcUserRepository(userDAO); //new InMemoryUserRepository();
-        MessageRepository messageRepository = new JdbcMessageRepository(messageDAO); //new InMemoryMessageRepository();
+        UserRepository userRepository = new InMemoryUserRepository();
+        //new JdbcUserRepository(userDAO);
+        MessageRepository messageRepository = new InMemoryMessageRepository();
+        //new JdbcMessageRepository(messageDAO);
 
         InputParser inputParser = new InputParser();
         Controller controller = new Controller();

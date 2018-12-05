@@ -4,11 +4,9 @@ import com.github.richardjwild.blather.helper.DBHelper;
 import com.github.richardjwild.blather.persistence.JdbcMessageRepository;
 import com.github.richardjwild.blather.persistence.dao.MessageDAO;
 import com.github.richardjwild.blather.user.User;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.util.Arrays;
@@ -38,11 +36,12 @@ public class JdbcMessageRepositoryShould {
 
     private MessageDAO messageDAO = mock(MessageDAO.class);
     private MessageRepository messageRepository = new JdbcMessageRepository(messageDAO);
+    private Connection connection;
 
-    @BeforeClass
-    public static void setUp() {
-        DBHelper.getConnection();
-        DBHelper.insertTestData();
+    @Before
+    public void setUp() {
+        connection = DBHelper.getConnection();
+        DBHelper.insertTestData(connection);
     }
 
     @Test
@@ -80,7 +79,7 @@ public class JdbcMessageRepositoryShould {
 
     @Test
     public void return_empty_collection_when_no_messages_posted_to_recipient() {
-        messageDAO = new MessageDAO(DBHelper.getConnection());
+        messageDAO = new MessageDAO(connection);
         messageRepository = new JdbcMessageRepository(messageDAO);
 
         Stream<Message> actualMessages = messageRepository.allMessagesPostedTo(RECIPIENT_2);
@@ -90,7 +89,7 @@ public class JdbcMessageRepositoryShould {
 
     @Test
     public void retrieve_message_posted_to_recipient() {
-        messageDAO = new MessageDAO(DBHelper.getConnection());
+        messageDAO = new MessageDAO(connection);
         messageRepository = new JdbcMessageRepository(messageDAO);
         messageRepository.postMessage(RECIPIENT_1, MESSAGE_1_FOR_RECIPIENT_1);
         
@@ -99,10 +98,10 @@ public class JdbcMessageRepositoryShould {
         assertThat(list(actualMesasges)).contains(MESSAGE_1_FOR_RECIPIENT_1);
     }
 
-    @AfterClass
-    public static void tearDown() {
-        DBHelper.clearTestData();
-        DBHelper.clearConnection();
+    @After
+    public void tearDown() {
+        DBHelper.clearTestData(connection);
+        DBHelper.clearConnection(connection);
     }
 
     private List<Message> list(Stream<Message> messageStream) {

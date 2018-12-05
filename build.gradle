@@ -38,14 +38,7 @@ task fatJar(type: Jar) {
 
 task migrateProductionDatabase(type: FlywayMigrateTask) {
     url = 'jdbc:postgresql://localhost:5432/blather'
-    user = 'postgres'
-    password = 'postgres'
-    schemas = ['public']
-}
-
-task migrateTestDatabase(type: FlywayMigrateTask) {
-    url = 'jdbc:postgresql://localhost:5432/test_blather'
-    user = 'postgres'
-    password = 'postgres'
+    user = 'codurance'
+    password = '1234'
     schemas = ['public']
 }
