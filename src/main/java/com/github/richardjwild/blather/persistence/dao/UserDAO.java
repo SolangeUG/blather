@@ -1,6 +1,9 @@
 package com.github.richardjwild.blather.persistence.dao;
 
 import com.github.richardjwild.blather.user.User;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,39 +15,37 @@ import java.util.List;
 public class UserDAO {
 
     private Connection connection;
+    private JdbcTemplate jdbcTemplate;
 
     public UserDAO(Connection connection) {
         this.connection = connection;
+
+
+        this.jdbcTemplate = new JdbcTemplate(DataSourceHelper.getDataSource());
     }
 
     public User findBy(String name) throws SQLException {
-        String sql = "SELECT * FROM users WHERE user_name = ?";
-        PreparedStatement selectStatement = connection.prepareStatement(sql);
-        selectStatement.setString(1, name);
-
-        ResultSet results = selectStatement.executeQuery();
+        List<User> users = this.jdbcTemplate.query("SELECT * FROM users WHERE user_name = ?",
+                new Object[]{name},
+                (rs, rowNum) -> {
+                    User user1 = new User(rs.getString("user_name"));
+                    return user1;
+                });
 
         User user = null;
-        while(results.next()) {
-            user = new User(results.getString("user_name"));
+        if (!users.isEmpty()) {
+            user = users.get(0);
+            String sql = "SELECT * FROM userFollowing WHERE user_name = ?";
+            List<User> usersFollowing = this.jdbcTemplate.query(sql,
+                    new Object[]{name},
+                    (rs, rowNum) -> {
+                        User user1 = new User(rs.getString("follows_name"));
+                        return user1;
+                    });
+
+            usersFollowing.forEach(user::follow);
         }
 
-        if (user != null) {
-            sql = "SELECT * FROM userFollowing WHERE user_name = ?";
-            selectStatement = connection.prepareStatement(sql);
-            selectStatement.setString(1, name);
-
-            ResultSet followings = selectStatement.executeQuery();
-            while(followings.next()) {
-                User following = new User(followings.getString("follows_name"));
-                user.follow(following);
-            }
-
-            followings.close();
-        }
-
-        results.close();
-        selectStatement.close();
         return user;
     }
 
