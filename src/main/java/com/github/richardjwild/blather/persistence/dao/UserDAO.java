@@ -1,13 +1,10 @@
 package com.github.richardjwild.blather.persistence.dao;
 
 import com.github.richardjwild.blather.user.User;
-import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,17 +47,11 @@ public class UserDAO {
     }
 
     public void save(User user) throws SQLException {
-        String sql = "INSERT INTO users(user_name) VALUES(?)";
-        PreparedStatement insertStatement = connection.prepareStatement(sql);
-        insertStatement.setString(1, user.name());
-
-        insertStatement.executeUpdate();
-        update(user);
-
-        insertStatement.close();
+        this.jdbcTemplate.update("INSERT INTO users(user_name) VALUES(?)",user.name());
+        updateFollowing(user);
     }
 
-    public void update(User user) throws SQLException {
+    public void updateFollowing(User user) throws SQLException {
         List<User> newUsersFollowing = new ArrayList<>(user.getUsersFollowing());
 
         User retrievedUser = this.findBy(user.name());
