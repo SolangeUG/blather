@@ -5,7 +5,6 @@ import com.github.richardjwild.blather.persistence.dao.UserDAO;
 import com.github.richardjwild.blather.user.User;
 import com.github.richardjwild.blather.user.UserRepository;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -25,7 +24,6 @@ public class JdbcUserRepositoryShould {
 
     private UserDAO userDAO = mock(UserDAO.class);
     private UserRepository userRepository = new JdbcUserRepository(userDAO);
-    private Connection connection;
 
     @Test
     public void return_empty_when_user_not_found() throws SQLException {
@@ -42,7 +40,7 @@ public class JdbcUserRepositoryShould {
         String userName = "will_be_found";
         User expectedUser = new User(userName);
 
-        userDAO = new UserDAO(connection);
+        userDAO = new UserDAO();
         userRepository = new JdbcUserRepository(userDAO);
 
         userRepository.save(expectedUser);
@@ -59,7 +57,7 @@ public class JdbcUserRepositoryShould {
         String userName = "Dinah";
         User user = new User(userName);
 
-        userRepository = new JdbcUserRepository(new UserDAO(connection));
+        userRepository = new JdbcUserRepository(new UserDAO());
         userRepository.save(user);
 
         User userWithSameName = new User(userName);
@@ -83,7 +81,7 @@ public class JdbcUserRepositoryShould {
         jolene.follow(sarah);
         jolene.follow(teddy);
 
-        userRepository = new JdbcUserRepository(new UserDAO(connection));
+        userRepository = new JdbcUserRepository(new UserDAO());
         userRepository.save(rich);
         userRepository.save(sarah);
         userRepository.save(teddy);
@@ -107,7 +105,7 @@ public class JdbcUserRepositoryShould {
     @Test
     public void a_user_should_not_follow_themselves() {
         User rich = new User("Rich");
-        userRepository = new JdbcUserRepository(new UserDAO(connection));
+        userRepository = new JdbcUserRepository(new UserDAO());
         userRepository.save(rich);
 
         Optional<User> retrievedUser = userRepository.find("Rich");
@@ -116,16 +114,5 @@ public class JdbcUserRepositoryShould {
 
         assertTrue(usersFollowing.isEmpty());
 
-    }
-
-    @Before
-    public void setUp() {
-        connection = DBHelper.getConnection();
-    }
-
-    @After
-    public void tearDown() {
-        DBHelper.clearTestData(connection);
-        DBHelper.clearConnection(connection);
     }
 }
