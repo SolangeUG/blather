@@ -21,10 +21,7 @@ public class UserDAO {
     public User findBy(String name) {
         List<User> users = this.jdbcTemplate.query("SELECT * FROM users WHERE user_name = ?",
                 new Object[]{name},
-                (rs, rowNum) -> {
-                    User user1 = new User(rs.getString("user_name"));
-                    return user1;
-                });
+                (rs, rowNum) -> new User(rs.getString("user_name")));
 
         User user = null;
         if (!users.isEmpty()) {
@@ -32,10 +29,7 @@ public class UserDAO {
             String sql = "SELECT * FROM userFollowing WHERE user_name = ?";
             List<User> usersFollowing = this.jdbcTemplate.query(sql,
                     new Object[]{name},
-                    (rs, rowNum) -> {
-                        User user1 = new User(rs.getString("follows_name"));
-                        return user1;
-                    });
+                    (rs, rowNum) -> new User(rs.getString("follows_name")));
 
             usersFollowing.forEach(user::follow);
         }

@@ -26,9 +26,9 @@ public class JdbcUserRepositoryShould {
     private UserRepository userRepository = new JdbcUserRepository(userDAO);
 
     @Test
-    public void return_empty_when_user_not_found() throws SQLException {
+    public void return_empty_when_user_not_found() {
         String will_not_be_found = "will_not_be_found";
-        given(userDAO.findBy(will_not_be_found)).willThrow(SQLException.class);
+        given(userDAO.findBy(will_not_be_found)).willReturn(null);
 
         Optional<User> result = userRepository.find(will_not_be_found);
 
@@ -36,7 +36,7 @@ public class JdbcUserRepositoryShould {
     }
 
     @Test
-    public void return_stored_user_when_user_is_found() throws SQLException {
+    public void return_stored_user_when_user_is_found() {
         String userName = "will_be_found";
         User expectedUser = new User(userName);
 
