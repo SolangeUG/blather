@@ -1,23 +1,22 @@
 package com.github.richardjwild.blather.persistence.dao;
 
 import com.github.richardjwild.blather.user.User;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class UserDAO {
 
-    private Connection connection;
     private JdbcTemplate jdbcTemplate;
 
     public UserDAO(Connection connection) {
-        this.connection = connection;
-
-
         this.jdbcTemplate = new JdbcTemplate(DataSourceHelper.getDataSource());
     }
 
@@ -57,16 +56,23 @@ public class UserDAO {
         User retrievedUser = this.findBy(user.name());
         List<User> usersFollowing = new ArrayList<>(retrievedUser.getUsersFollowing());
 
-        for (User following : newUsersFollowing) {
+        List<User> result = newUsersFollowing
+                                .stream()
+                                .filter(elem -> ! usersFollowing.contains(elem))
+                                .collect(Collectors.toList());
 
-            if (! usersFollowing.contains(following)) {
-                String sql = "INSERT INTO userFollowing(user_name, follows_name) VALUES(?, ?)";
+        String sql = "INSERT INTO userFollowing(user_name, follows_name) VALUES(?, ?)";
 
-                PreparedStatement insertStatement = connection.prepareStatement(sql);
-                insertStatement.setString(1, user.name());
-                insertStatement.setString(2, following.name());
-                insertStatement.executeUpdate();
-            }
-        }
+        this.jdbcTemplate.batchUpdate(sql,
+                new BatchPreparedStatementSetter() {
+                    public void setValues(PreparedStatement ps, int i) throws SQLException {
+                        ps.setString(1, user.name());
+                        ps.setString(2, result.get(i).name());
+                    }
+                    public int getBatchSize() {
+                        return result.size();
+                    }
+                }
+        );
     }
 }
