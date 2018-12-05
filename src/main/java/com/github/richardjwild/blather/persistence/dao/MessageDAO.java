@@ -1,17 +1,22 @@
 package com.github.richardjwild.blather.persistence.dao;
 
+import com.github.richardjwild.blather.helper.DatabaseConnection;
 import com.github.richardjwild.blather.message.Message;
 import com.github.richardjwild.blather.user.User;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MessageDAO {
     private Connection connection;
+    private JdbcTemplate jdbcTemplate;
 
     public MessageDAO(Connection connection) {
         this.connection = connection;
+        this.jdbcTemplate = new JdbcTemplate(DataSourceHelper.getDataSource());
     }
 
     public List<Message> findBy(String userName) throws SQLException {
@@ -21,20 +26,13 @@ public class MessageDAO {
                     " LEFT OUTER JOIN users us ON mess.user_name = us.user_name " +
                     " WHERE us.user_name = ?";
 
-        PreparedStatement selectStatement = connection.prepareStatement(sql);
-        selectStatement.setString(1, userName);
-        ResultSet resultSet = selectStatement.executeQuery();
+        User user = new User(userName);
 
-        List<Message> messages = new ArrayList<>();
-
-        while(resultSet.next()) {
-            User user = new User(userName);
-            Message message = getMessage(resultSet, user);
-            messages.add(message);
-        }
-
-        resultSet.close();
-        return messages;
+        return this.jdbcTemplate.query(sql,
+                                    new Object[] {userName},
+                                    (rs, rowNum) -> new Message(user,
+                                                    rs.getString("message_text"),
+                                                    rs.getTimestamp("message_date").toInstant()));
     }
 
     private Message getMessage(ResultSet resultSet, User user) throws SQLException {
