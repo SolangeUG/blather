@@ -18,7 +18,7 @@ public class UserDAO {
         this.jdbcTemplate = new JdbcTemplate(DataSourceHelper.getDataSource());
     }
 
-    public User findBy(String name) throws SQLException {
+    public User findBy(String name) {
         List<User> users = this.jdbcTemplate.query("SELECT * FROM users WHERE user_name = ?",
                 new Object[]{name},
                 (rs, rowNum) -> {
@@ -43,12 +43,12 @@ public class UserDAO {
         return user;
     }
 
-    public void save(User user) throws SQLException {
+    public void save(User user) {
         this.jdbcTemplate.update("INSERT INTO users(user_name) VALUES(?)",user.name());
         updateFollowing(user);
     }
 
-    public void updateFollowing(User user) throws SQLException {
+    public void updateFollowing(User user) {
         List<User> newUsersFollowing = new ArrayList<>(user.getUsersFollowing());
 
         User retrievedUser = this.findBy(user.name());
