@@ -5,7 +5,6 @@ import com.github.richardjwild.blather.message.MessageRepository;
 import com.github.richardjwild.blather.persistence.dao.MessageDAO;
 import com.github.richardjwild.blather.user.User;
 
-import java.sql.SQLException;
 import java.util.stream.Stream;
 
 public class JdbcMessageRepository implements MessageRepository {
@@ -17,11 +16,7 @@ public class JdbcMessageRepository implements MessageRepository {
 
     @Override
     public void postMessage(User recipient, Message message) {
-        try {
-            this.messageDAO.save(message);
-        } catch (SQLException e) {
-            throw new RuntimeException(e.getMessage());
-        }
+        this.messageDAO.save(message);
     }
 
     @Override

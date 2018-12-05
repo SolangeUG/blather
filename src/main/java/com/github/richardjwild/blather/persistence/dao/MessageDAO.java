@@ -11,11 +11,10 @@ import java.sql.Timestamp;
 import java.util.List;
 
 public class MessageDAO {
-    private Connection connection;
+
     private JdbcTemplate jdbcTemplate;
 
-    public MessageDAO(Connection connection) {
-        this.connection = connection;
+    public MessageDAO() {
         this.jdbcTemplate = new JdbcTemplate(DataSourceHelper.getDataSource());
     }
 
@@ -35,15 +34,11 @@ public class MessageDAO {
                                                     rs.getTimestamp("message_date").toInstant()));
     }
 
-    public void save(Message message) throws SQLException {
+    public void save(Message message) {
         String sql = "INSERT INTO messages(user_name, message_text, message_date)" +
                     " VALUES(?, ?, ?)";
-        PreparedStatement insertStatement = connection.prepareStatement(sql);
-        insertStatement.setString(1, message.recipient().name());
-        insertStatement.setString(2, message.text());
-        insertStatement.setObject(3, Timestamp.from(message.timestamp()));
 
-        insertStatement.executeUpdate();
-        insertStatement.close();
+        this.jdbcTemplate.update(sql,
+                message.recipient().name(), message.text(), Timestamp.from(message.timestamp()));
     }
 }

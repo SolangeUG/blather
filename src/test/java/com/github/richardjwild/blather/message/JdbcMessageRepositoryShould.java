@@ -45,7 +45,7 @@ public class JdbcMessageRepositoryShould {
     }
 
     @Test
-    public void store_all_messages_posted_to_a_recipient() throws SQLException {
+    public void store_all_messages_posted_to_a_recipient() {
         given(messageDAO.findBy(RECIPIENT_1.name())).willReturn(
                 Arrays.asList(MESSAGE_1_FOR_RECIPIENT_1, MESSAGE_2_FOR_RECIPIENT_1));
 
@@ -58,7 +58,7 @@ public class JdbcMessageRepositoryShould {
     }
 
     @Test
-    public void retrieve_messages_posted_to_a_recipient() throws SQLException {
+    public void retrieve_messages_posted_to_a_recipient() {
         given(messageDAO.findBy(RECIPIENT_1.name())).willReturn(
                 Collections.singletonList(MESSAGE_1_FOR_RECIPIENT_1));
         messageRepository.postMessage(RECIPIENT_1, MESSAGE_1_FOR_RECIPIENT_1);
@@ -79,7 +79,7 @@ public class JdbcMessageRepositoryShould {
 
     @Test
     public void return_empty_collection_when_no_messages_posted_to_recipient() {
-        messageDAO = new MessageDAO(connection);
+        messageDAO = new MessageDAO();
         messageRepository = new JdbcMessageRepository(messageDAO);
 
         Stream<Message> actualMessages = messageRepository.allMessagesPostedTo(RECIPIENT_2);
@@ -89,7 +89,7 @@ public class JdbcMessageRepositoryShould {
 
     @Test
     public void retrieve_message_posted_to_recipient() {
-        messageDAO = new MessageDAO(connection);
+        messageDAO = new MessageDAO();
         messageRepository = new JdbcMessageRepository(messageDAO);
         messageRepository.postMessage(RECIPIENT_1, MESSAGE_1_FOR_RECIPIENT_1);
         
