@@ -1,11 +1,10 @@
 package com.github.richardjwild.blather.persistence;
 
-import com.github.richardjwild.blather.helper.DBHelper;
+import com.github.richardjwild.blather.helper.DataBaseHelper;
 import com.github.richardjwild.blather.persistence.dao.UserDAO;
 import com.github.richardjwild.blather.user.User;
 import com.github.richardjwild.blather.user.UserRepository;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -120,12 +119,12 @@ public class JdbcUserRepositoryShould {
 
     @Before
     public void setUp() {
-        connection = DBHelper.getConnection();
+        connection = DataBaseHelper.getConnection();
     }
 
     @After
     public void tearDown() {
-        DBHelper.clearTestData(connection);
-        DBHelper.clearConnection(connection);
+        DataBaseHelper.clearTestData(connection);
+        DataBaseHelper.clearConnection(connection);
     }
 }

@@ -1,6 +1,6 @@
 package com.github.richardjwild.blather.message;
 
-import com.github.richardjwild.blather.helper.DBHelper;
+import com.github.richardjwild.blather.helper.DataBaseHelper;
 import com.github.richardjwild.blather.persistence.JdbcMessageRepository;
 import com.github.richardjwild.blather.persistence.dao.MessageDAO;
 import com.github.richardjwild.blather.user.User;
@@ -40,8 +40,8 @@ public class JdbcMessageRepositoryShould {
 
     @Before
     public void setUp() {
-        connection = DBHelper.getConnection();
-        DBHelper.insertTestData(connection);
+        connection = DataBaseHelper.getConnection();
+        DataBaseHelper.insertTestData(connection);
     }
 
     @Test
@@ -100,8 +100,8 @@ public class JdbcMessageRepositoryShould {
 
     @After
     public void tearDown() {
-        DBHelper.clearTestData(connection);
-        DBHelper.clearConnection(connection);
+        DataBaseHelper.clearTestData(connection);
+        DataBaseHelper.clearConnection(connection);
     }
 
     private List<Message> list(Stream<Message> messageStream) {
