@@ -4,6 +4,7 @@ import com.github.richardjwild.blather.user.User;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -14,8 +15,8 @@ public class UserDAO {
 
     private JdbcTemplate jdbcTemplate;
 
-    public UserDAO() {
-        this.jdbcTemplate = new JdbcTemplate(DataSourceHelper.getDataSource());
+    public UserDAO(DataSource dataSource) {
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
     public User findBy(String name) {

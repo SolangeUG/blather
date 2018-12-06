@@ -1,15 +1,13 @@
 package com.github.richardjwild.blather.persistence;
 
-import com.github.richardjwild.blather.helper.DBHelper;
+import com.github.richardjwild.blather.helper.DataSourceManager;
 import com.github.richardjwild.blather.persistence.dao.UserDAO;
 import com.github.richardjwild.blather.user.User;
 import com.github.richardjwild.blather.user.UserRepository;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.sql.Connection;
-import java.sql.SQLException;
+import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -22,12 +20,23 @@ import static org.mockito.Mockito.mock;
 
 public class JdbcUserRepositoryShould {
 
-    private UserDAO userDAO = mock(UserDAO.class);
-    private UserRepository userRepository = new JdbcUserRepository(userDAO);
+    private DataSource dataSource;
+    private UserDAO userDAO;
+    private UserRepository userRepository;
+
+    @Before
+    public void setUp() {
+        String propertiesFileName = "application-test.properties";
+        dataSource = new DataSourceManager(propertiesFileName).getDataSource();
+    }
 
     @Test
     public void return_empty_when_user_not_found() {
         String will_not_be_found = "will_not_be_found";
+
+        userDAO = mock(UserDAO.class);
+        userRepository = new JdbcUserRepository(userDAO);
+
         given(userDAO.findBy(will_not_be_found)).willReturn(null);
 
         Optional<User> result = userRepository.find(will_not_be_found);
@@ -40,7 +49,7 @@ public class JdbcUserRepositoryShould {
         String userName = "will_be_found";
         User expectedUser = new User(userName);
 
-        userDAO = new UserDAO();
+        userDAO = new UserDAO(dataSource);
         userRepository = new JdbcUserRepository(userDAO);
 
         userRepository.save(expectedUser);
@@ -57,7 +66,7 @@ public class JdbcUserRepositoryShould {
         String userName = "Dinah";
         User user = new User(userName);
 
-        userRepository = new JdbcUserRepository(new UserDAO());
+        userRepository = new JdbcUserRepository(new UserDAO(dataSource));
         userRepository.save(user);
 
         User userWithSameName = new User(userName);
@@ -81,7 +90,7 @@ public class JdbcUserRepositoryShould {
         jolene.follow(sarah);
         jolene.follow(teddy);
 
-        userRepository = new JdbcUserRepository(new UserDAO());
+        userRepository = new JdbcUserRepository(new UserDAO(dataSource));
         userRepository.save(rich);
         userRepository.save(sarah);
         userRepository.save(teddy);
@@ -105,7 +114,7 @@ public class JdbcUserRepositoryShould {
     @Test
     public void a_user_should_not_follow_themselves() {
         User rich = new User("Rich");
-        userRepository = new JdbcUserRepository(new UserDAO());
+        userRepository = new JdbcUserRepository(new UserDAO(dataSource));
         userRepository.save(rich);
 
         Optional<User> retrievedUser = userRepository.find("Rich");
@@ -113,6 +122,6 @@ public class JdbcUserRepositoryShould {
         List<User> usersFollowing = new ArrayList<>(retrievedUser.get().getUsersFollowing());
 
         assertTrue(usersFollowing.isEmpty());
-
     }
+
 }

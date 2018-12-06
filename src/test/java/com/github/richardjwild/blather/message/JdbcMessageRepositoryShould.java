@@ -1,13 +1,16 @@
 package com.github.richardjwild.blather.message;
 
 import com.github.richardjwild.blather.helper.DBHelper;
+import com.github.richardjwild.blather.helper.DataSourceManager;
 import com.github.richardjwild.blather.persistence.JdbcMessageRepository;
 import com.github.richardjwild.blather.persistence.dao.MessageDAO;
 import com.github.richardjwild.blather.user.User;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,10 +41,15 @@ public class JdbcMessageRepositoryShould {
     private MessageRepository messageRepository = new JdbcMessageRepository(messageDAO);
     private Connection connection;
 
+    private DataSource dataSource;
+
     @Before
     public void setUp() {
         connection = DBHelper.getConnection();
         DBHelper.insertTestData(connection);
+
+        String propertiesFiles = "application-test.properties";
+        dataSource = new DataSourceManager(propertiesFiles).getDataSource();
     }
 
     @Test
@@ -79,7 +87,7 @@ public class JdbcMessageRepositoryShould {
 
     @Test
     public void return_empty_collection_when_no_messages_posted_to_recipient() {
-        messageDAO = new MessageDAO();
+        messageDAO = new MessageDAO(dataSource);
         messageRepository = new JdbcMessageRepository(messageDAO);
 
         Stream<Message> actualMessages = messageRepository.allMessagesPostedTo(RECIPIENT_2);
@@ -89,7 +97,7 @@ public class JdbcMessageRepositoryShould {
 
     @Test
     public void retrieve_message_posted_to_recipient() {
-        messageDAO = new MessageDAO();
+        messageDAO = new MessageDAO(dataSource);
         messageRepository = new JdbcMessageRepository(messageDAO);
         messageRepository.postMessage(RECIPIENT_1, MESSAGE_1_FOR_RECIPIENT_1);
         

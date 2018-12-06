@@ -4,9 +4,7 @@ import com.github.richardjwild.blather.message.Message;
 import com.github.richardjwild.blather.user.User;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import javax.sql.DataSource;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -14,8 +12,8 @@ public class MessageDAO {
 
     private JdbcTemplate jdbcTemplate;
 
-    public MessageDAO() {
-        this.jdbcTemplate = new JdbcTemplate(DataSourceHelper.getDataSource());
+    public MessageDAO(DataSource dataSource) {
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
     public List<Message> findBy(String userName) {
