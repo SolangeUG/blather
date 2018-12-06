@@ -1,6 +1,6 @@
 package com.github.richardjwild.blather.message;
 
-import com.github.richardjwild.blather.helper.DBHelper;
+import com.github.richardjwild.blather.helper.DataBaseHelper;
 import com.github.richardjwild.blather.helper.DataSourceManager;
 import com.github.richardjwild.blather.persistence.JdbcMessageRepository;
 import com.github.richardjwild.blather.persistence.dao.MessageDAO;
@@ -37,17 +37,13 @@ public class JdbcMessageRepositoryShould {
     private static final Message MESSAGE_2_FOR_RECIPIENT_1 = new Message(RECIPIENT_1, TEXT_2, TIMESTAMP_2);
     private static final Message MESSAGE_1_FOR_RECIPIENT_2 = new Message(RECIPIENT_2, TEXT_3, TIMESTAMP_3);
 
+    private DataSource dataSource;
     private MessageDAO messageDAO = mock(MessageDAO.class);
     private MessageRepository messageRepository = new JdbcMessageRepository(messageDAO);
-    private Connection connection;
 
-    private DataSource dataSource;
 
     @Before
     public void setUp() {
-        connection = DBHelper.getConnection();
-        DBHelper.insertTestData(connection);
-
         String propertiesFiles = "application-test.properties";
         dataSource = new DataSourceManager(propertiesFiles).getDataSource();
     }
@@ -97,6 +93,9 @@ public class JdbcMessageRepositoryShould {
 
     @Test
     public void retrieve_message_posted_to_recipient() {
+        DataBaseHelper dataBaseHelper = new DataBaseHelper(dataSource);
+        dataBaseHelper.initializeTestData();
+
         messageDAO = new MessageDAO(dataSource);
         messageRepository = new JdbcMessageRepository(messageDAO);
         messageRepository.postMessage(RECIPIENT_1, MESSAGE_1_FOR_RECIPIENT_1);
@@ -104,12 +103,8 @@ public class JdbcMessageRepositoryShould {
         Stream<Message> actualMesasges = messageRepository.allMessagesPostedTo(RECIPIENT_1);
 
         assertThat(list(actualMesasges)).contains(MESSAGE_1_FOR_RECIPIENT_1);
-    }
 
-    @After
-    public void tearDown() {
-        DBHelper.clearTestData(connection);
-        DBHelper.clearConnection(connection);
+        dataBaseHelper.clearTestData();
     }
 
     private List<Message> list(Stream<Message> messageStream) {
