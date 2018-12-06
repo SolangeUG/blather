@@ -1,43 +1,44 @@
 package com.github.richardjwild.blather.helper;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
+
+import javax.sql.DataSource;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
-public class DatabaseConnection {
+public class DataSourceManager {
 
-    private static Connection connection;
+    private DataSource dataSource;
+    private String propertiesFileName;
 
-    public static Connection getConnection() {
-        if (connection == null) {
-            setUpConnection();
-        }
-        return connection;
+    public DataSourceManager(String propertiesFileName) {
+        this.propertiesFileName = propertiesFileName;
     }
 
-    private static void setUpConnection() {
-        if (connection == null) {
-            String databaseUrl = "jdbc:postgresql://localhost:5432/blather";
+    public synchronized DataSource getDataSource() {
+
+        if (dataSource == null) {
+
+            InputStream input = ClassLoader.getSystemResourceAsStream(propertiesFileName);
             Properties properties = new Properties();
-            properties.setProperty("user", "postgres");
-            properties.setProperty("password", "postgres");
 
             try {
-                connection = DriverManager.getConnection(databaseUrl, properties);
-            } catch (SQLException e) {
+                properties.load(input);
+
+                DriverManagerDataSource dataSource = new DriverManagerDataSource();
+                dataSource.setDriverClassName("org.postgresql.Driver");
+                dataSource.setUrl(properties.getProperty("database.url"));
+                dataSource.setUsername(properties.getProperty("database.user"));
+                dataSource.setPassword(properties.getProperty("database.password"));
+
+                this.dataSource = dataSource;
+
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-    }
 
-    public static void closeConnection() {
-        if (connection != null) {
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
+        return dataSource;
     }
 }
