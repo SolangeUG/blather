@@ -2,9 +2,12 @@ package com.github.richardjwild.blather;
 
 import com.github.richardjwild.blather.application.Application;
 import com.github.richardjwild.blather.application.ApplicationBuilder;
+import com.github.richardjwild.blather.helper.DataBaseHelper;
+import com.github.richardjwild.blather.helper.DataSourceManager;
 import com.github.richardjwild.blather.io.Input;
 import com.github.richardjwild.blather.io.Output;
 import com.github.richardjwild.blather.time.Clock;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,6 +15,7 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import javax.sql.DataSource;
 import java.time.Instant;
 
 import static org.mockito.Mockito.inOrder;
@@ -98,5 +102,13 @@ public class BlatherShould {
         inOrder.verify(output).writeLine("Alice - Sup everyone? (15 seconds ago)");
         inOrder.verify(output).writeLine("Bob - I wanna party :) (1 second ago)");
         inOrder.verify(output).writeLine("Bye!");
+    }
+
+    @After
+    public void tearDown() {
+        String propertiesFileName = "application-production.properties";
+        DataSource dataSource = new DataSourceManager(propertiesFileName).getDataSource();
+        DataBaseHelper dataBaseHelper = new DataBaseHelper(dataSource);
+        dataBaseHelper.clearTestData();
     }
 }
