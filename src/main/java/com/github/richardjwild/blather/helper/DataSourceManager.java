@@ -20,8 +20,8 @@ public class DatabaseConnection {
         if (connection == null) {
             String databaseUrl = "jdbc:postgresql://localhost:5432/blather";
             Properties properties = new Properties();
-            properties.setProperty("user", "codurance");
-            properties.setProperty("password", "1234");
+            properties.setProperty("user", "postgres");
+            properties.setProperty("password", "postgres");
 
             try {
                 connection = DriverManager.getConnection(databaseUrl, properties);
