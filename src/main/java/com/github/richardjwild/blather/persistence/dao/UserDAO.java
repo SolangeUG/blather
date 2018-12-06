@@ -49,7 +49,7 @@ public class UserDAO {
         User retrievedUser = this.findBy(user.name());
         List<User> usersFollowing = new ArrayList<>(retrievedUser.getUsersFollowing());
 
-        List<User> result = newUsersFollowing
+        List<User> newFollowings = newUsersFollowing
                                 .stream()
                                 .filter(elem -> ! usersFollowing.contains(elem))
                                 .collect(Collectors.toList());
@@ -60,10 +60,10 @@ public class UserDAO {
                 new BatchPreparedStatementSetter() {
                     public void setValues(PreparedStatement ps, int i) throws SQLException {
                         ps.setString(1, user.name());
-                        ps.setString(2, result.get(i).name());
+                        ps.setString(2, newFollowings.get(i).name());
                     }
                     public int getBatchSize() {
-                        return result.size();
+                        return newFollowings.size();
                     }
                 }
         );
