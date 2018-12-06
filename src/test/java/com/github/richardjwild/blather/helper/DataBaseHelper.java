@@ -8,7 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Properties;
 
-public class DBHelper {
+public class DataBaseHelper {
 
     public static Connection getConnection() {
         return setUpConnection();
@@ -55,14 +55,14 @@ public class DBHelper {
 
     private static Connection setUpConnection() {
         Connection connection = null;
-        InputStream configuration = ClassLoader.getSystemResourceAsStream("application.properties");
+        InputStream configuration = ClassLoader.getSystemResourceAsStream("application-test.properties");
         Properties properties = new Properties();
         try {
             properties.load(configuration);
             connection = DriverManager.getConnection(
-                    properties.getProperty("database.test.url"),
-                    properties.getProperty("database.test.user"),
-                    properties.getProperty("database.test.password")
+                    properties.getProperty("database.url"),
+                    properties.getProperty("database.user"),
+                    properties.getProperty("database.password")
             );
         } catch (IOException | SQLException e) {
             e.printStackTrace();
