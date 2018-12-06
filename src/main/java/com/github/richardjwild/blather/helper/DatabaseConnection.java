@@ -1,5 +1,7 @@
 package com.github.richardjwild.blather.helper;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -7,31 +9,33 @@ import java.util.Properties;
 
 public class DatabaseConnection {
 
-    private static Connection connection;
+    private Connection connection;
 
-    public static Connection getConnection() {
+    public Connection getConnection() {
         if (connection == null) {
             setUpConnection();
         }
         return connection;
     }
 
-    private static void setUpConnection() {
+    private void setUpConnection() {
         if (connection == null) {
-            String databaseUrl = "jdbc:postgresql://localhost:5432/blather";
+            InputStream configuration = ClassLoader.getSystemResourceAsStream("application.properties");
             Properties properties = new Properties();
-            properties.setProperty("user", "codurance");
-            properties.setProperty("password", "1234");
-
             try {
-                connection = DriverManager.getConnection(databaseUrl, properties);
-            } catch (SQLException e) {
+                properties.load(configuration);
+                connection = DriverManager.getConnection(
+                        properties.getProperty("database.url"),
+                        properties.getProperty("database.user"),
+                        properties.getProperty("database.password")
+                );
+            } catch (IOException | SQLException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    public static void closeConnection() {
+    public void closeConnection() {
         if (connection != null) {
             try {
                 connection.close();

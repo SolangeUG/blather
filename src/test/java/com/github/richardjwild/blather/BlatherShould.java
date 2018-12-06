@@ -2,9 +2,11 @@ package com.github.richardjwild.blather;
 
 import com.github.richardjwild.blather.application.Application;
 import com.github.richardjwild.blather.application.ApplicationBuilder;
+import com.github.richardjwild.blather.helper.DatabaseConnection;
 import com.github.richardjwild.blather.io.Input;
 import com.github.richardjwild.blather.io.Output;
 import com.github.richardjwild.blather.time.Clock;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,6 +16,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.time.Instant;
 
+import static com.github.richardjwild.blather.helper.DataBaseHelper.clearTestData;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.when;
 
@@ -98,5 +101,10 @@ public class BlatherShould {
         inOrder.verify(output).writeLine("Alice - Sup everyone? (15 seconds ago)");
         inOrder.verify(output).writeLine("Bob - I wanna party :) (1 second ago)");
         inOrder.verify(output).writeLine("Bye!");
+    }
+
+    @After
+    public void tearDown() {
+        clearTestData(new DatabaseConnection().getConnection());
     }
 }

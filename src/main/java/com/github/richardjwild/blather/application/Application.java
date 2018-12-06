@@ -20,6 +20,5 @@ public class Application {
         output.writeLine(WELCOME_MESSAGE);
         eventLoop.start();
         output.writeLine(GOODBYE_MESSAGE);
-        DatabaseConnection.closeConnection();
     }
 }
